@@ -1,0 +1,27 @@
+.step-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: var(--step-bar-h);
+  background: var(--navy-950);
+  border-top: 1px solid rgba(185,196,206,0.18);
+  z-index: 220;
+  display: flex;
+  align-items: center;
+}
+.step-bar-inner {
+  width: 100%;
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+.step-bar-back, .step-bar-next { min-width: 150px; }
+
+.spin { animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 560px) {
+  .step-bar-back, .step-bar-next { min-width: 0; flex: 1; }
+}

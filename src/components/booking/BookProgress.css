@@ -1,0 +1,42 @@
+.book-progress-bar {
+  position: relative;
+  background: #eaf6fc;
+  border-bottom: 1px solid #d3e9f2;
+}
+.book-progress {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 4px 20px;
+  max-width: 280px;
+  margin: 0 auto;
+}
+.book-progress-item { display: flex; align-items: center; gap: 6px; flex: 1; }
+.book-progress-item:last-child { flex: 0; }
+.book-progress-dot {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  border: 1.5px solid var(--chrome-300);
+  color: var(--chrome-600);
+  font-family: var(--font-accent);
+  font-size: 0.78rem;
+  flex-shrink: 0;
+  background: var(--white);
+}
+.book-progress-item.active .book-progress-dot { border-color: var(--cyan-500); color: var(--cyan-600); background: var(--white); }
+.book-progress-item.done .book-progress-dot { background: var(--cyan-500); border-color: var(--cyan-500); color: var(--white); }
+.book-progress-label {
+  font-family: var(--font-accent);
+  font-size: 0.74rem;
+  color: var(--chrome-600);
+  white-space: nowrap;
+}
+.book-progress-item.active .book-progress-label { color: var(--navy-900); }
+.book-progress-line { flex: 1; height: 1.5px; background: var(--chrome-300); min-width: 6px; max-width: 32px; }
+.book-progress-item.done .book-progress-line { background: var(--cyan-500); }
+
+@media (max-width: 560px) {
+  .book-progress-label { display: none; }
+}

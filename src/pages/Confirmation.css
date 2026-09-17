@@ -1,0 +1,22 @@
+.confirmation-page {
+  padding-top: var(--nav-h);
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--navy-950);
+}
+.confirmation-box {
+  max-width: 480px;
+  text-align: center;
+  padding: 80px 24px;
+  color: var(--chrome-200);
+}
+.confirmation-icon { color: var(--cyan-400); margin-bottom: 20px; }
+.confirmation-box h1 { color: var(--white); font-size: 2rem; margin-bottom: 14px; }
+.confirmation-box p { color: var(--chrome-300); margin-bottom: 32px; }
+.confirmation-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-bottom: 30px; }
+.confirmation-note {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  color: var(--chrome-600); font-size: 0.86rem;
+  border-top: 1px solid rgba(185,196,206,0.15);
+  padding-top: 24px;
+}

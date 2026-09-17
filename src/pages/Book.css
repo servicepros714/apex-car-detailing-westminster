@@ -1,0 +1,16 @@
+.book-page {
+  padding-top: var(--nav-h);
+  padding-bottom: calc(var(--step-bar-h) + 20px);
+  min-height: 100vh;
+  background: linear-gradient(180deg, #eaf6fc 0%, #f4fafd 40%, #f7fbfd 100%);
+}
+.book-layout {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 40px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .book-layout { grid-template-columns: 1fr; }
+}
