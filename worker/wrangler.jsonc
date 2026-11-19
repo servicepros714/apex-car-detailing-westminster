@@ -1,0 +1,15 @@
+{
+  "name": "apex-car-detailing-v2",
+  "main": "index.js",
+  "compatibility_date": "2026-10-01",
+  "workers_dev": true,
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "detailing-bookings-remoticojobs",
+      "database_id": "eb75d203-a2ac-406b-aa74-81c3060c21ab"
+    }
+  ]
+  // Secrets (not stored here): STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, ADMIN_TOKEN
+  // — set with `npx wrangler secret put <NAME>`
+}

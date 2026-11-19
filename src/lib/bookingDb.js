@@ -1,6 +1,6 @@
 // Apex Car Detailing Westminster — Worker API client
 // source tag: "apex-westminster"   |   booking ID prefix: "APX-"
-// Talks to the shared detailing-bookings D1 database via the
+// Talks to the detailing-bookings-remoticojobs D1 database via the
 // site's own Cloudflare Worker (see /worker/index.js).
 
 const API_URL = import.meta.env.VITE_API_URL
@@ -17,13 +17,19 @@ async function request(path, options = {}) {
   return res.json()
 }
 
-/** Returns an array of already-booked time strings ("09:00 AM") for a given date. */
+/**
+ * Returns the time strings ("09:00 AM") that can't be booked on a given date —
+ * already taken, in the past, or inside the 2-hour lead window (California time).
+ */
 export async function getBookedSlots(dateStr) {
-  const data = await request(`/api/availability?date=${dateStr}`)
-  return data.booked || []
+  const availability = await request(`/api/availability?date=${dateStr}`)
+  return Object.keys(availability).filter((slot) => availability[slot])
 }
 
-/** Creates the booking row. Returns { id, ...booking }. */
+/**
+ * Creates the booking row from the customer's choices (serviceId, exteriorAddOn,
+ * contact details). The Worker computes the price; returns { id, service, subtotal, coupon, total }.
+ */
 export async function createBooking(booking) {
   return request('/api/bookings', {
     method: 'POST',
@@ -31,23 +37,29 @@ export async function createBooking(booking) {
   })
 }
 
-/** Updates payment_status once Stripe confirms the charge, or marks Pay Later. */
-export async function updateBookingPayment(id, payment_status) {
-  return request(`/api/bookings/${id}`, {
-    method: 'PATCH',
-    body: JSON.stringify({ payment_status }),
+/**
+ * Confirms a booking as Pay Later: the Worker turns the 'Pending' booking into
+ * Confirmed / Pay Later and sends the booking notification.
+ */
+export async function confirmPayLater(bookingId, email) {
+  return request(`/api/bookings/${encodeURIComponent(bookingId)}/confirm`, {
+    method: 'POST',
+    body: JSON.stringify({ email }),
   })
 }
 
-/** Creates a Stripe PaymentIntent server-side and returns { clientSecret }. */
-export async function createPaymentIntent(amountCents) {
+/**
+ * Creates a Stripe PaymentIntent server-side for the booking's server-computed
+ * total and returns { clientSecret, amount } (amount in cents).
+ */
+export async function createPaymentIntent({ bookingId, coupon }) {
   return request('/api/create-payment-intent', {
     method: 'POST',
-    body: JSON.stringify({ amount: amountCents }),
+    body: JSON.stringify({ bookingId, coupon }),
   })
 }
 
-/** Validates a coupon code (PREPAY). Returns { valid, discountCents }. */
+/** Validates a coupon code (PREPAY). Returns { valid, discount } (discount in whole dollars). */
 export async function validateCoupon(code) {
   return request('/api/validate-coupon', {
     method: 'POST',

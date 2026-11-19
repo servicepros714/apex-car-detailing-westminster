@@ -11,13 +11,12 @@ import InfoStep from '../components/booking/InfoStep'
 import StepBar from '../components/StepBar'
 import { useBooking } from '../context/BookingContext'
 import { createBooking } from '../lib/bookingDb'
-import { BUSINESS } from '../lib/business'
 import './Book.css'
 
 export default function Book() {
   const [step, setStep] = useState(0)
   const [loading, setLoading] = useState(false)
-  const { booking, SERVICES, total, setConfirmedBooking } = useBooking()
+  const { booking, SERVICES, setConfirmedBooking } = useBooking()
   const navigate = useNavigate()
 
   const hasCoreService = booking.services.some((id) => SERVICES.find((s) => s.id === id && !s.addOn))
@@ -39,22 +38,21 @@ export default function Book() {
     // final step -> create the booking row, then move to checkout
     setLoading(true)
     try {
-      const serviceNames = SERVICES.filter((s) => booking.services.includes(s.id)).map((s) => s.name).join(' + ')
+      // Only the choices are sent — the Worker computes the service name and price.
+      const coreService = SERVICES.find((s) => !s.addOn && booking.services.includes(s.id))
       const result = await createBooking({
         date: booking.date,
         time: booking.time,
-        service: serviceNames,
+        serviceId: coreService.id,
+        exteriorAddOn: booking.services.includes('exterior'),
         name: booking.name,
         phone: booking.phone,
         email: booking.email,
         vehicle: booking.vehicle,
         address: booking.address,
         notes: booking.notes,
-        source: BUSINESS.source,
-        status: 'Pending',
-        payment_status: 'Pay Later',
       })
-      setConfirmedBooking({ ...booking, id: result.id, serviceNames, total })
+      setConfirmedBooking({ ...booking, id: result.id, serviceNames: result.service, total: result.subtotal })
       navigate('/checkout')
     } catch (err) {
       toast.error(err.message || 'Something went wrong. Please try again.')

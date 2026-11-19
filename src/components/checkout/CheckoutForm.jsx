@@ -7,7 +7,7 @@ import {
 import toast from 'react-hot-toast'
 import { Tag, Loader2, ShieldCheck } from 'lucide-react'
 import { useBooking } from '../../context/BookingContext'
-import { validateCoupon, updateBookingPayment } from '../../lib/bookingDb'
+import { validateCoupon, confirmPayLater } from '../../lib/bookingDb'
 import './CheckoutForm.css'
 
 const elementStyle = {
@@ -21,7 +21,7 @@ const elementStyle = {
   },
 }
 
-export default function CheckoutForm({ clientSecret, baseCents, discountCents, setDiscountCents, finalCents }) {
+export default function CheckoutForm({ clientSecret, baseCents, discountCents, setCoupon, finalCents }) {
   const stripe = useStripe()
   const elements = useElements()
   const navigate = useNavigate()
@@ -31,19 +31,20 @@ export default function CheckoutForm({ clientSecret, baseCents, discountCents, s
   const [couponStatus, setCouponStatus] = useState(null) // 'applied' | 'invalid' | null
   const [couponLoading, setCouponLoading] = useState(false)
   const [paying, setPaying] = useState(false)
-  const [payingLater, setPayingLater] = useState(false)
+  const [confirmingPayLater, setConfirmingPayLater] = useState(false)
 
   async function applyCoupon() {
     if (!couponCode.trim()) return
     setCouponLoading(true)
     try {
-      const res = await validateCoupon(couponCode.trim().toUpperCase())
+      const code = couponCode.trim().toUpperCase()
+      const res = await validateCoupon(code)
       if (res.valid) {
-        setDiscountCents(res.discountCents)
+        setCoupon({ code, discountCents: res.discount * 100 })
         setCouponStatus('applied')
       } else {
         setCouponStatus('invalid')
-        setDiscountCents(0)
+        setCoupon(null)
       }
     } catch {
       setCouponStatus('invalid')
@@ -62,8 +63,8 @@ export default function CheckoutForm({ clientSecret, baseCents, discountCents, s
         payment_method: { card: cardNumberElement },
       })
       if (error) throw new Error(error.message)
+      // The Stripe webhook marks the booking Paid — the browser never sets payment status.
       if (paymentIntent?.status === 'succeeded') {
-        await updateBookingPayment(confirmedBooking.id, 'Paid')
         resetBooking()
         navigate('/confirmation', { state: { paid: true } })
       }
@@ -74,16 +75,18 @@ export default function CheckoutForm({ clientSecret, baseCents, discountCents, s
     }
   }
 
+  // The booking was saved as 'Pending' at the last step; confirming makes it
+  // Confirmed / Pay Later and sends the booking notification.
   async function handlePayLater() {
-    setPayingLater(true)
+    setConfirmingPayLater(true)
     try {
-      await updateBookingPayment(confirmedBooking.id, 'Pay Later')
+      await confirmPayLater(confirmedBooking.id, confirmedBooking.email)
       resetBooking()
       navigate('/confirmation', { state: { paid: false } })
-    } catch (err) {
-      toast.error(err.message || 'Something went wrong. Please try again.')
+    } catch {
+      toast.error('We could not confirm your booking. Please try again or call us.')
     } finally {
-      setPayingLater(false)
+      setConfirmingPayLater(false)
     }
   }
 
@@ -97,7 +100,6 @@ export default function CheckoutForm({ clientSecret, baseCents, discountCents, s
             if (error) {
               toast.error(error.message)
             } else {
-              await updateBookingPayment(confirmedBooking.id, 'Paid')
               resetBooking()
               navigate('/confirmation', { state: { paid: true } })
             }
@@ -142,8 +144,8 @@ export default function CheckoutForm({ clientSecret, baseCents, discountCents, s
           </button>
         </form>
 
-        <button className="checkout-pay-later" onClick={handlePayLater} disabled={payingLater}>
-          {payingLater ? 'Saving…' : 'Pay Later — reserve without paying now'}
+        <button className="checkout-pay-later" onClick={handlePayLater} disabled={confirmingPayLater || paying}>
+          {confirmingPayLater ? 'Confirming…' : 'Pay Later — reserve without paying now'}
         </button>
         <p className="checkout-secure"><ShieldCheck size={14} /> Payments secured by Stripe</p>
       </div>

@@ -10,20 +10,28 @@ import './Checkout.css'
 export default function Checkout() {
   const { confirmedBooking } = useBooking()
   const [clientSecret, setClientSecret] = useState(null)
-  const [discountCents, setDiscountCents] = useState(0)
+  const [coupon, setCoupon] = useState(null) // { code, discountCents } once applied
   const [error, setError] = useState('')
 
   const baseCents = confirmedBooking ? Math.round(confirmedBooking.total * 100) : 0
+  const discountCents = coupon?.discountCents || 0
   const finalCents = Math.max(baseCents - discountCents, 0)
 
   useEffect(() => {
     if (!confirmedBooking) return
     setError('')
-    createPaymentIntent(finalCents)
-      .then((data) => setClientSecret(data.clientSecret))
-      .catch(() => setError("Couldn't start checkout. Please try again or choose Pay Later."))
+    // The Worker prices the booking itself; refuse to continue if it disagrees with what's on screen.
+    createPaymentIntent({ bookingId: confirmedBooking.id, coupon: coupon?.code || null })
+      .then((data) => {
+        if (data.amount !== finalCents) throw new Error('Price mismatch')
+        setClientSecret(data.clientSecret)
+      })
+      .catch(() => {
+        setClientSecret(null)
+        setError("Couldn't start checkout. Please try again or choose Pay Later.")
+      })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [confirmedBooking, finalCents])
+  }, [confirmedBooking, coupon])
 
   if (!confirmedBooking) return <Navigate to="/book" replace />
 
@@ -41,7 +49,7 @@ export default function Checkout() {
               clientSecret={clientSecret}
               baseCents={baseCents}
               discountCents={discountCents}
-              setDiscountCents={setDiscountCents}
+              setCoupon={setCoupon}
               finalCents={finalCents}
             />
           </Elements>

@@ -5,12 +5,19 @@ Mobile auto-detailing booking site for Apex Car Detailing Westminster
 Cloudflare Pages + Workers + D1, Stripe.
 
 ## Identifiers assigned to this site
-- **source tag:** `apex-westminster`
-- **booking ID prefix:** `APX-`
-- **Worker URL:** `apex-westminster-detailing-worker.austin80565.workers.dev`
 
-These do not collide with any existing site in the portfolio (Montek, Sonrisa,
-Bonnie, Wax Coat Brea, Premium Anaheim).
+| | |
+|---|---|
+| Source tag | `apex-westminster` |
+| Booking ID prefix | `APX-` |
+| Worker URL | `apex-car-detailing-v2.remoticojobs.workers.dev` |
+| D1 database | `detailing-bookings-remoticojobs` (shared, remoticojobs account) |
+| Pages project | `apex-car-detailing-v2` → https://apex-car-detailing-v2.pages.dev |
+| Time zone | All booking dates/times are California time (America/Los_Angeles), enforced in the Worker |
+
+Same setup as `alera-car-detailing-v2`. The older Pages project
+`apex-car-detailin-westminster` (domain `apexcardetailinwestminster.site`) is a
+separate, earlier site and is not deployed from this repo.
 
 ## Local development
 
@@ -19,49 +26,70 @@ npm install
 npm run dev
 ```
 
-Copy `.env.local` and make sure it points at your Worker + Stripe publishable key
-(the file is already committed with placeholder-safe values — only the secret
-key stays out of git).
+`.env.local` is committed with `VITE_API_URL` and the Stripe **publishable** key
+(safe to commit — only secret keys stay out of git).
 
 ## Deploying
 
 ### 1. Cloudflare D1
-This site uses the **shared** `detailing-bookings` D1 database on account
-`austin80565`. The Worker runs `CREATE TABLE IF NOT EXISTS` on every request,
-so no manual migration is required — it's safe to point this Worker's `DB`
-binding at the existing shared database.
+This site uses the shared `detailing-bookings-remoticojobs` database. The schema
+is in `worker/schema.sql` (`IF NOT EXISTS`, safe to re-run) and is already
+applied — nothing to do for a normal deploy.
 
 ### 2. Cloudflare Worker
-1. In the Cloudflare dashboard, create a new Worker named
-   `apex-westminster-detailing-worker`.
-2. Paste the contents of `worker/index.js`.
-3. Bind the shared D1 database to the variable name `DB`.
-4. Add a Worker secret `STRIPE_SECRET_KEY` with your Stripe **secret** key.
-5. Deploy. Confirm the URL matches `VITE_API_URL` in `.env.local`.
+Config lives in `worker/wrangler.jsonc` (D1 binding `DB`). Deploy from the CLI:
 
-### 3. GitHub + Cloudflare Pages
-1. Push this repo to GitHub.
-2. In GitHub → Settings → Secrets, add:
-   - `CLOUDFLARE_API_TOKEN`
-   - `CLOUDFLARE_ACCOUNT_ID`
-   - `VITE_STRIPE_PUBLISHABLE_KEY`
-3. Create a Cloudflare Pages project named `apex-car-detailing-westminster`
-   (or update the `projectName` in `.github/workflows/deploy.yml` to match
-   whatever you create).
-4. Push to `main` — GitHub Actions builds and deploys automatically.
+```bash
+cd worker
+npx wrangler deploy
+```
+
+Secrets (`npx wrangler secret put <NAME>`, only needed once / when rotating):
+
+| Secret | Purpose |
+|---|---|
+| `STRIPE_SECRET_KEY` | Stripe secret key (`sk_test_…` / `sk_live_…`) — must match the mode of the publishable key in `.env.local` |
+| `STRIPE_WEBHOOK_SECRET` | Signing secret (`whsec_…`) of the Stripe webhook below |
+| `ADMIN_TOKEN` | Required for `GET`/`PATCH /api/bookings/:id`. Stored locally in `.admin-token` (git-ignored) |
+
+The Worker rejects past dates, invalid slots, double-booked slots, and same-day
+slots inside the 2-hour lead window, all evaluated in California time.
+
+### 3. Cloudflare Pages
+Project `apex-car-detailing-v2` (Direct Upload, no Git connection). Manual deploy:
+
+```bash
+npm run build
+npx wrangler pages deploy dist --project-name apex-car-detailing-v2 --branch main
+```
+
+`.github/workflows/deploy.yml` does the same on push to `main`, provided the
+repo's `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` secrets belong to the
+remoticojobs account.
 
 ### 4. Stripe
 - Uses `automatic_payment_methods[enabled]=true` so Link, Apple Pay, and
   Google Pay all work through the same PaymentIntent.
 - Apple Pay requires domain verification in the Stripe dashboard once the
   custom domain is live.
-- The `PREPAY` coupon gives a flat $15 discount and is validated server-side
-  in the Worker (`/api/validate-coupon`).
+- The `PREPAY` coupon gives a flat $15 discount, validated server-side.
+- **Pricing is server-side.** The site sends only `serviceId`, `exteriorAddOn`
+  and `coupon`; the Worker computes the total (prices live in `SERVICES` in
+  `worker/index.js` — keep them in sync with `src/context/BookingContext.jsx`)
+  and charges that amount. Any client-sent amount, service name or payment
+  status is ignored.
+- **Webhook** → `https://apex-car-detailing-v2.remoticojobs.workers.dev/api/stripe-webhook`,
+  events `payment_intent.succeeded` (booking → `Paid`) and `charge.refunded`
+  (→ `Refunded` / `Partially Refunded`). Bookings only become `Paid` through
+  this webhook. The Stripe account is shared with other sites, so the Worker
+  ignores events whose `metadata.source` isn't `apex-westminster`.
 
 ### 5. Admin dashboard
-This Worker's endpoints (`/api/bookings/:id` PATCH with
+`GET` and `PATCH /api/bookings/:id` require the header
+`Authorization: Bearer <ADMIN_TOKEN>` (401 otherwise). `PATCH` accepts
 `reschedule_date`, `reschedule_time`, `original_date`, `original_time`,
-`notes2`) are compatible with the shared portfolio admin dashboard.
+`notes2`, `status`, and `payment_status` — compatible with the shared
+portfolio admin dashboard.
 
 ## What's unique to this build
 - Navy / chrome / cyan palette pulled from the Apex logo
