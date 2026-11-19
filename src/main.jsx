@@ -1,18 +1,21 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
-import { Toaster } from 'react-hot-toast'
 import App from './App'
 import { BookingProvider } from './context/BookingContext'
 import './index.css'
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+const root = document.getElementById('root')
+const app = (
   <React.StrictMode>
     <BrowserRouter>
       <BookingProvider>
         <App />
-        <Toaster position="top-center" toastOptions={{ style: { fontFamily: 'Barlow, sans-serif' } }} />
       </BookingProvider>
     </BrowserRouter>
   </React.StrictMode>
 )
+
+// Prerendered pages already have HTML in #root: hydrate it. Booking pages are empty: render.
+if (root.hasChildNodes()) ReactDOM.hydrateRoot(root, app)
+else ReactDOM.createRoot(root).render(app)

@@ -4,6 +4,21 @@ Mobile auto-detailing booking site for Apex Car Detailing Westminster
 ((714) 276-1658). Built on the shared Service Pros stack: Vite + React 18,
 Cloudflare Pages + Workers + D1, Stripe.
 
+## SEO
+
+- `npm run build` = client build + SSR build + `scripts/prerender.js`, which writes static HTML for
+  every marketing page (`dist/<slug>.html`), `dist/404.html` and `dist/sitemap.xml`. The build fails
+  if a title is over 60 or a description over 160 characters.
+- Business facts, packages (also used by booking), job times, FAQ and Google reviews: `src/lib/business.js`.
+- Service and city landing pages (data): `src/lib/pages.js`, rendered by `src/pages/Landing.jsx`.
+- Head tags and schema: `src/lib/seo.js`. Styles for the SEO pieces: `src/seo.css`.
+- Google Business Profile: set `GOOGLE_PROFILE_URL` / `GOOGLE_PROFILE_ID` in `src/lib/business.js`
+  and add real reviews to `REVIEWS`.
+- No `public/_redirects`: Cloudflare Pages serves the `.html` files and `404.html` itself.
+  `public/_headers` keeps `*.pages.dev` out of search results.
+- Deploy is a direct upload (no Git integration): build, then
+  `CLOUDFLARE_ACCOUNT_ID=805b4baa2eb5c30a80b36ab7e9548570 npx wrangler pages deploy dist --project-name apex-car-detailing-v2 --branch main`.
+
 ## Identifiers assigned to this site
 
 | | |

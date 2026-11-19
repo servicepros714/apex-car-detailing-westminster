@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { Menu, X, Phone, Calendar } from 'lucide-react'
 import { BUSINESS } from '../lib/business'
 import './Navbar.css'
@@ -8,7 +8,6 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
   const location = useLocation()
-  const navigate = useNavigate()
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24)
@@ -22,22 +21,18 @@ export default function Navbar() {
     location.pathname.startsWith(p)
   )
 
-  function scrollToId(id) {
-    if (location.pathname !== '/') {
-      navigate('/')
-      setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }), 60)
-    } else {
-      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
-    }
-  }
+  // Plain /#section links: they work from every page (home and landing pages),
+  // and crawlers can follow them.
+  const close = () => setOpen(false)
 
   return (
     <>
       <header className={`nav ${scrolled ? 'nav-scrolled' : ''}`}>
         <div className="nav-inner">
           <nav className="nav-side nav-left">
-            <button onClick={() => scrollToId('services')}>Services</button>
-            <button onClick={() => scrollToId('gallery')}>Gallery</button>
+            <a className="nav-link" href="/#services">Services</a>
+            <a className="nav-link" href="/#gallery">Gallery</a>
+            <a className="nav-link" href="/#faq">FAQ</a>
           </nav>
 
           <Link to="/" className="nav-badge" aria-label="Apex Car Detailing home">
@@ -45,7 +40,7 @@ export default function Navbar() {
           </Link>
 
           <nav className="nav-side nav-right">
-            <button onClick={() => scrollToId('about')}>About</button>
+            <a className="nav-link" href="/#area">Areas</a>
             <a href={BUSINESS.phoneHref} className="nav-phone">
               <Phone size={15} /> {BUSINESS.phone}
             </a>
@@ -67,10 +62,11 @@ export default function Navbar() {
             <X size={26} />
           </button>
         </div>
-        <button onClick={() => scrollToId('services')}>Services</button>
-        <button onClick={() => scrollToId('gallery')}>Gallery</button>
-        <button onClick={() => scrollToId('about')}>About</button>
-        <button onClick={() => scrollToId('contact')}>Contact</button>
+        <a className="nav-drawer-link" href="/#services" onClick={close}>Services</a>
+        <a className="nav-drawer-link" href="/#gallery" onClick={close}>Gallery</a>
+        <a className="nav-drawer-link" href="/#about" onClick={close}>About</a>
+        <a className="nav-drawer-link" href="/#faq" onClick={close}>FAQ</a>
+        <a className="nav-drawer-link" href="/#area" onClick={close}>Service Area</a>
         <Link to="/book" className="btn btn-primary nav-drawer-cta">
           <Calendar size={17} /> Book Online
         </Link>

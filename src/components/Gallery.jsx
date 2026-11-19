@@ -2,12 +2,13 @@ import { useRef } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import './Gallery.css'
 
+// Real job photos (public/images). Captions name the vehicle only.
 const PHOTOS = [
-  { src: '/images/hero-bmw.jpg', caption: 'BMW X5 — full exterior detail, Newport driveway' },
-  { src: '/images/gallery-charger.jpg', caption: 'Dodge Charger — hand wash & tire shine' },
-  { src: '/images/gallery-jeep.jpg', caption: 'Jeep Grand Cherokee — chrome & panel detail' },
-  { src: '/images/gallery-accord.jpg', caption: 'Honda Accord — showroom exterior finish' },
-  { src: '/images/gallery-silverado.jpg', caption: 'Silverado — foam pre-soak before hand wash' },
+  { src: '/images/hero-bmw.jpg', w: 1080, h: 1350, caption: 'BMW X5', alt: 'Gray BMW X5 after a hand wash on a residential street' },
+  { src: '/images/gallery-charger.jpg', w: 1080, h: 1080, caption: 'Dodge Charger', alt: 'White Dodge Charger with a clean finish in a parking lot' },
+  { src: '/images/gallery-jeep.jpg', w: 1080, h: 1439, caption: 'Jeep Grand Cherokee', alt: 'Black Jeep Grand Cherokee after a detail' },
+  { src: '/images/gallery-accord.jpg', w: 1080, h: 1080, caption: 'Honda Accord', alt: 'Silver Honda Accord after a detail on a residential street' },
+  { src: '/images/gallery-silverado.jpg', w: 1080, h: 1080, caption: 'Chevrolet Silverado — foam pre-soak', alt: 'Black Chevrolet Silverado covered in foam during a curbside hand wash' },
 ]
 
 export default function Gallery() {
@@ -32,7 +33,7 @@ export default function Gallery() {
       <div className="gallery-track" ref={trackRef}>
         {PHOTOS.map((p) => (
           <figure key={p.src} className="gallery-card">
-            <img src={p.src} alt={p.caption} loading="lazy" />
+            <img src={p.src} alt={p.alt} width={p.w} height={p.h} loading="lazy" />
             <figcaption>{p.caption}</figcaption>
           </figure>
         ))}

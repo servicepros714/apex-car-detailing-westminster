@@ -1,29 +1,34 @@
 import { Star } from 'lucide-react'
+import { REVIEWS, GOOGLE_PROFILE_URL } from '../lib/business'
 import './Testimonials.css'
 
-const REVIEWS = [
-  { name: 'Marissa T.', city: 'Westminster', text: 'They showed up right on time and my Accord looked brand new inside. Booking online took two minutes.' },
-  { name: 'Daniel P.', city: 'Huntington Beach', text: 'Premium detail was worth every dollar. The interior shampoo got stains out I thought were permanent.' },
-  { name: 'Grace L.', city: 'Fountain Valley', text: 'Easy scheduling, friendly crew, and the exterior wash left zero water spots. Already rebooked.' },
-]
-
+// Real Google reviews only (src/lib/business.js). With no reviews, this shows a link
+// to the Google profile if there is one, or nothing at all.
 export default function Testimonials() {
+  if (!REVIEWS.length && !GOOGLE_PROFILE_URL) return null
   return (
-    <section className="testimonials section">
+    <section id="reviews" className="testimonials section">
       <div className="container">
         <span className="line-label">Reviews</span>
-        <h2>What Westminster drivers are saying.</h2>
-        <div className="testimonials-grid">
-          {REVIEWS.map((r) => (
-            <div key={r.name} className="testimonial-card">
-              <div className="testimonial-stars">
-                {Array.from({ length: 5 }).map((_, i) => <Star key={i} size={16} fill="currentColor" />)}
+        <h2>{REVIEWS.length ? 'What customers are saying.' : 'Find us on Google.'}</h2>
+        {REVIEWS.length > 0 && (
+          <div className="testimonials-grid">
+            {REVIEWS.map((r) => (
+              <div key={r.name} className="testimonial-card">
+                <div className="testimonial-stars" aria-label="5 out of 5 stars">
+                  {[1, 2, 3, 4, 5].map((i) => <Star key={i} size={16} fill="currentColor" />)}
+                </div>
+                <p>{r.text}</p>
+                <div className="testimonial-name">{r.name} <span>· Google review</span></div>
               </div>
-              <p>{r.text}</p>
-              <div className="testimonial-name">{r.name} <span>· {r.city}</span></div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
+        {GOOGLE_PROFILE_URL && (
+          <a href={GOOGLE_PROFILE_URL} target="_blank" rel="noopener noreferrer" className="btn btn-dark reviews-google">
+            {REVIEWS.length ? 'See all reviews on Google' : 'Apex on Google'}
+          </a>
+        )}
       </div>
     </section>
   )

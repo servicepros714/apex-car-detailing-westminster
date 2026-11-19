@@ -1,52 +1,7 @@
 import { createContext, useContext, useState } from 'react'
+import { SERVICES } from '../lib/business'
 
 const BookingContext = createContext(null)
-
-const SERVICES = [
-  {
-    id: 'basic',
-    name: 'Basic Interior Detail',
-    price: 150,
-    tagline: 'A thorough interior reset.',
-    features: [
-      'Triple-Stage Vacuuming for Deep Debris Removal',
-      'Complete Interior Surface Wipe-Down',
-      'Floor Mat Cleaning & Restoration',
-    ],
-  },
-  {
-    id: 'premium',
-    name: 'Premium Detail',
-    price: 200,
-    tagline: 'The full interior treatment.',
-    popular: true,
-    features: [
-      'Triple-Stage Vacuuming',
-      'Cabin Application',
-      'Dust Elimination',
-      'Interior Window Cleaning',
-      'Deep Carpet Cleaning',
-      'Cloth & Carpet Extraction',
-      'Full Interior Shampooing',
-      'UV-Protectant Coating',
-    ],
-  },
-  {
-    id: 'exterior',
-    name: 'Exterior Wash',
-    price: 50,
-    tagline: 'Add-on to either detail.',
-    addOn: true,
-    features: [
-      'Hand-Washed Exterior',
-      'Detailed Rim Cleaning',
-      'Tire Scrub and Degrease',
-      'Door Jamb & Panel Wipe-Down',
-      'Premium Tire Shine Application',
-      'Spot-Free Hand Drying',
-    ],
-  },
-]
 
 const TIME_SLOTS = (() => {
   const slots = []

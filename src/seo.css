@@ -1,0 +1,180 @@
+/* SEO additions: home H1 swap, nav links, internal links, FAQ, service area, footer link
+   rows, 404 and the landing page template (src/pages/Landing.jsx). Uses index.css tokens. */
+
+/* Home: the small cyan line is the H1, the big headline is a <p>. Same look as before. */
+.hero-content h1.line-label { font-size: 0.8rem; line-height: 1.4; }
+.hero p.hero-title { font-family: var(--font-display); font-weight: 700; line-height: 1.08; }
+
+/* In-page links (/#faq ...) stop below the fixed menu bar */
+section[id] { scroll-margin-top: 90px; }
+
+/* Nav: links styled like the old scroll buttons */
+.nav-side .nav-link {
+  color: var(--chrome-200); font-family: var(--font-accent); font-size: 0.92rem;
+  letter-spacing: 0.02em; padding: 6px 0; position: relative;
+}
+.nav-side .nav-link::after {
+  content: ''; position: absolute; left: 0; bottom: -2px; width: 0; height: 2px;
+  background: var(--cyan-400); transition: width 0.2s ease;
+}
+.nav-side .nav-link:hover { color: var(--white); }
+.nav-side .nav-link:hover::after { width: 100%; }
+.nav-drawer .nav-drawer-link {
+  color: var(--chrome-200); font-family: var(--font-accent); font-size: 1.05rem;
+  padding: 14px 4px; border-bottom: 1px solid rgba(185,196,206,0.1);
+}
+
+/* About steps: h4 -> h3 (no skipped heading levels) */
+.about-step h3 { font-size: 1.15rem; margin-bottom: 6px; }
+
+/* Packages: intro line, job time, links to the service pages */
+.services-intro { color: var(--chrome-600); margin-top: 12px; }
+.service-time {
+  display: inline-flex; align-items: center; gap: 6px; margin: -8px 0 16px;
+  font-family: var(--font-accent); font-size: 0.85rem; color: var(--chrome-200);
+}
+.service-time svg { color: var(--cyan-400); }
+.seo-links {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
+  gap: 0 22px; margin-top: 36px; padding-top: 14px; border-top: 1px solid var(--chrome-300);
+}
+.seo-links span { font-family: var(--font-accent); font-size: 0.8rem; letter-spacing: 0.04em; color: var(--chrome-600); text-transform: uppercase; }
+.seo-links a { display: inline-flex; align-items: center; min-height: 44px; font-family: var(--font-accent); font-size: 0.98rem; color: var(--navy-900); }
+.seo-links a:hover { color: var(--cyan-600); }
+
+/* Reviews: Google button */
+.reviews-google { margin-top: 28px; }
+
+/* Chips: city and service links */
+.lp-chips { list-style: none; padding: 0; margin: 22px 0 0; display: flex; flex-wrap: wrap; gap: 10px; }
+.lp-chips a, .lp-chips span {
+  display: inline-flex; align-items: center; min-height: 44px; padding: 0 18px;
+  font-family: var(--font-accent); font-size: 0.95rem; border-radius: var(--radius-sm);
+  background: var(--navy-900); color: var(--white); border: 1px solid var(--navy-900);
+  transition: background 0.18s ease, color 0.18s ease;
+}
+.lp-chips a:hover { background: var(--cyan-500); border-color: var(--cyan-500); color: var(--navy-950); }
+.lp-chips--plain span { background: var(--white); color: var(--navy-900); border-color: var(--chrome-300); }
+.lp-info { list-style: none; padding: 0; margin: 24px 0 0; display: grid; gap: 10px; }
+.lp-info li { display: flex; align-items: center; gap: 10px; color: var(--chrome-600); }
+.lp-info svg { color: var(--cyan-600); flex: none; }
+.lp-info a { color: var(--navy-900); font-weight: 600; }
+.lp-map { border: 1px solid var(--chrome-300); overflow: hidden; }
+.lp-spots-label {
+  display: flex; align-items: center; gap: 6px; margin-top: 24px;
+  font-family: var(--font-accent); font-size: 0.8rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--chrome-600);
+}
+.lp-spots-label svg { color: var(--cyan-600); }
+.lp-spots-label + .lp-chips { margin-top: 10px; }
+
+/* Home: service area */
+.area-section { background: var(--white); border-top: 1px solid var(--chrome-200); }
+.area-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
+.area-grid h2 { font-size: clamp(1.9rem, 3vw, 2.4rem); margin: 14px 0 16px; }
+.area-text { color: var(--chrome-600); max-width: 52ch; }
+
+/* FAQ */
+.faq-section { background: var(--white); border-top: 1px solid var(--chrome-200); }
+.faq-grid { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 56px; align-items: start; }
+.faq-side h2 { font-size: clamp(1.9rem, 3vw, 2.4rem); margin: 14px 0 16px; }
+.faq-side p { color: var(--chrome-600); }
+.faq-side a { color: var(--cyan-600); font-weight: 600; }
+.faq-list { border-top: 1px solid var(--chrome-300); }
+.faq-item { border-bottom: 1px solid var(--chrome-300); }
+.faq-item summary {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  min-height: 44px; padding: 18px 0; cursor: pointer; list-style: none;
+  font-family: var(--font-display); font-size: 1.2rem; font-weight: 700; color: var(--navy-900);
+}
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary svg { flex: none; color: var(--cyan-600); transition: transform 0.2s ease; }
+.faq-item[open] summary svg { transform: rotate(45deg); }
+.faq-item p { padding: 0 0 20px; color: var(--chrome-600); max-width: 64ch; }
+
+/* Footer: headings (were h5) and link rows */
+.footer-col .footer-heading, .footer-links-row .footer-heading {
+  font-family: var(--font-accent); color: var(--white); font-size: 0.85rem; letter-spacing: 0.03em; margin: 0 0 4px;
+}
+.footer-links { padding-bottom: 24px; }
+.footer-links-row {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 2px 20px;
+  padding: 12px 0; border-top: 1px solid rgba(185,196,206,0.12);
+}
+.footer-links-row .footer-heading { margin: 0 6px 0 0; }
+.footer-links-row a { display: inline-flex; align-items: center; min-height: 36px; font-size: 0.9rem; color: var(--chrome-300); }
+.footer-links-row a:hover { color: var(--cyan-400); }
+
+/* 404 */
+.notfound { margin-top: var(--nav-h); text-align: center; padding: 120px 0; }
+.notfound h1 { font-size: clamp(2.2rem, 5vw, 3.4rem); margin: 16px 0; }
+.notfound p { color: var(--chrome-600); max-width: 46ch; margin: 0 auto; }
+.notfound-actions { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; margin-top: 30px; }
+
+/* ---------------- Landing pages ---------------- */
+.lp-hero {
+  margin-top: var(--nav-h);
+  padding: 72px 0 80px;
+  background:
+    linear-gradient(100deg, rgba(6,13,24,0.96) 0%, rgba(6,13,24,0.88) 55%, rgba(6,13,24,0.78) 100%),
+    url('/images/gallery-silverado.jpg') center / cover no-repeat,
+    var(--navy-950);
+}
+.lp-hero-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 56px; align-items: center; }
+.lp-crumbs { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-family: var(--font-accent); font-size: 0.85rem; color: var(--chrome-600); }
+.lp-crumbs a { display: inline-flex; align-items: center; min-height: 44px; color: var(--chrome-300); }
+.lp-crumbs a:hover { color: var(--cyan-400); }
+.lp-crumbs [aria-current] { color: var(--white); }
+.lp-hero .line-label { color: var(--cyan-400); }
+.lp-title {
+  font-size: clamp(2.4rem, 4.6vw, 3.6rem); color: var(--white);
+  text-transform: uppercase; letter-spacing: 0.01em; margin: 18px 0 18px;
+}
+.lp-title span { display: block; color: var(--cyan-400); }
+.lp-lede { color: var(--chrome-200); font-size: 1.08rem; max-width: 50ch; }
+.lp-ctas { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 28px; }
+.lp-facts { list-style: none; padding: 0; margin: 26px 0 0; display: flex; flex-wrap: wrap; gap: 10px 22px; }
+.lp-facts li { display: flex; align-items: center; gap: 7px; font-family: var(--font-accent); font-size: 0.9rem; color: var(--chrome-200); }
+.lp-facts svg { color: var(--cyan-400); flex: none; }
+
+.lp-card { max-width: 440px; width: 100%; justify-self: end; overflow: hidden; }
+.lp-card-title { color: var(--white); font-size: 1.5rem; padding-right: 40px; }
+.lp-card ul { margin-bottom: 22px; }
+.lp-card-btn { margin-top: 4px; }
+.lp-card-note { margin-top: 12px; text-align: center; font-size: 0.85rem; color: var(--chrome-600); }
+
+.lp-intro-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 56px; align-items: center; }
+.lp-intro-text h2 { font-size: clamp(1.9rem, 3vw, 2.4rem); margin: 14px 0 16px; }
+.lp-intro-text p { color: var(--chrome-600); max-width: 60ch; }
+.lp-intro-text p + p { margin-top: 12px; }
+.lp-photo { margin: 0; max-width: 420px; width: 100%; justify-self: center; clip-path: polygon(0 0, 100% 0, 100% calc(100% - 22px), calc(100% - 22px) 100%, 0 100%); }
+.lp-photo img { width: 100%; height: auto; }
+
+.lp-dark .services { background: var(--white); border-top: 1px solid var(--chrome-200); border-bottom: 1px solid var(--chrome-200); }
+
+.lp-points-title { font-size: clamp(1.9rem, 3vw, 2.4rem); margin: 14px 0 32px; }
+.lp-points { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+.lp-points h3 { font-size: 1.2rem; margin-bottom: 8px; }
+.lp-points p { color: var(--chrome-600); }
+
+.lp-related { background: var(--white); border-top: 1px solid var(--chrome-200); }
+.lp-related-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; }
+.lp-related-title { font-size: 1.6rem; }
+
+.lp-cta { background: var(--navy-950); padding: 64px 0; border-top: 3px solid var(--cyan-500); }
+.lp-cta-inner { display: flex; align-items: center; justify-content: space-between; gap: 28px; flex-wrap: wrap; }
+.lp-cta h2 { color: var(--white); font-size: clamp(1.8rem, 3vw, 2.4rem); }
+.lp-cta p { color: var(--chrome-300); margin-top: 6px; }
+
+@media (max-width: 900px) {
+  .faq-grid, .area-grid, .lp-hero-grid, .lp-intro-grid, .lp-related-grid { grid-template-columns: 1fr; gap: 36px; }
+  .lp-card { justify-self: start; max-width: 520px; }
+  .lp-points { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .lp-hero { padding: 48px 0 56px; }
+  .lp-ctas a { flex: 1 1 100%; }
+}
+/* Phones: keep the end of the page clear of the fixed Call / Book bar */
+@media (max-width: 860px) {
+  body.has-mobile-bar { padding-bottom: var(--mobile-bar-h); }
+}
