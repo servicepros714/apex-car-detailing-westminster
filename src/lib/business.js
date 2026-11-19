@@ -23,9 +23,8 @@ export const SITE_URL = (import.meta.env.VITE_SITE_URL || 'https://apexcardetail
 
 // Google Business Profile. GOOGLE_PROFILE_URL is the share link people click;
 // GOOGLE_PROFILE_ID is the stable kgmid search URL used in schema (sameAs).
-// Not set yet: the link sent on Nov 19 2026 opened Alera's profile instead.
-export const GOOGLE_PROFILE_URL = null
-export const GOOGLE_PROFILE_ID = null
+export const GOOGLE_PROFILE_URL = 'https://share.google/TbfHkPfPeZepHeKHM'
+export const GOOGLE_PROFILE_ID = 'https://www.google.com/search?kgmid=/g/11msp6lwbw'
 
 // The packages (home cards, landing pages, booking flow). Prices must match
 // worker/index.js SERVICES / EXTERIOR_ADDON, which the server charges from.
@@ -94,4 +93,11 @@ export const FAQS = [
 // Real customer reviews only, copied from the Google Business Profile
 // (first name + last initial, spelling typos fixed). While empty, the home page shows
 // a Google link if there is a profile, or nothing. To add one: { name: 'Maria G.', text: '...' }.
-export const REVIEWS = []
+export const REVIEWS = [
+  { name: 'Marc L.', text: 'Really happy with how everything turned out! Apex Car Detailing did a great job with the wash, and the car looks so much cleaner. They clearly put effort into their work. Would definitely recommend their service!' },
+  { name: 'Andrea F.', text: 'Honest prices, on time, professional and knowledgeable. Wouldn’t trust anyone else with my car' },
+  { name: 'Tiffany W.', text: 'My car looked fresh and felt brand new. I was impressed. Great job' },
+  { name: 'Ryan G.', text: 'Leaves no spots behind. Is flexible with his schedule. Never had an issue with him only positive experiences 🙏' },
+  { name: 'Haley M.', text: 'Hooked my charger up! Great service!' },
+  { name: 'Jiwoo P.', text: 'super neat and nice service!!' },
+]
